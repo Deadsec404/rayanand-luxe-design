@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <linearGradient id="favGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3E5C8" />
+      <stop offset="50%" stop-color="#C9A15B" />
+      <stop offset="100%" stop-color="#997536" />
+    </linearGradient>
+  </defs>
+
+  <!-- Dark Background Badge -->
+  <rect width="100" height="100" rx="20" fill="#080808" />
+  <rect width="98" height="98" x="1" y="1" rx="19" fill="none" stroke="url(#favGold)" stroke-width="1" opacity="0.4"/>
+
+  <g transform="translate(10, 8) scale(0.8)">
+    <!-- Thin Circular Framing Arc -->
+    <path
+      d="M 50 15 C 70 15 88 28 90 50 C 92 68 80 82 60 88"
+      stroke="url(#favGold)"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      fill="none"
+      opacity="0.8"
+    />
+
+    <!-- Laurel Leaves -->
+    <path d="M 28 72 C 20 60 20 40 38 18" stroke="url(#favGold)" stroke-width="1.5" fill="none" />
+    <path d="M 24 64 C 18 64 16 58 20 52 C 26 54 28 60 24 64 Z" fill="url(#favGold)" />
+    <path d="M 22 52 C 16 50 16 42 22 38 C 28 42 26 48 22 52 Z" fill="url(#favGold)" />
+    <path d="M 26 38 C 22 34 24 26 30 24 C 34 28 32 34 26 38 Z" fill="url(#favGold)" />
+
+    <!-- R Monogram with House -->
+    <path
+      d="M 38 18 L 60 18 C 76 18 85 26 85 40 C 85 52 76 60 62 62 L 82 88 L 72 88 L 54 64 L 46 64 L 46 88 L 38 88 Z"
+      fill="url(#favGold)"
+    />
+    <!-- Roof Gable -->
+    <path d="M 58 45 L 42 85 L 47 87 L 58 53 L 73 87 L 78 85 Z" fill="#F3E5C8" />
+    
+    <!-- 4-Pane Window -->
+    <rect x="54" y="68" width="3.5" height="3.5" rx="0.5" fill="url(#favGold)" />
+    <rect x="59.5" y="68" width="3.5" height="3.5" rx="0.5" fill="url(#favGold)" />
+    <rect x="54" y="73" width="3.5" height="3.5" rx="0.5" fill="url(#favGold)" />
+    <rect x="59.5" y="73" width="3.5" height="3.5" rx="0.5" fill="url(#favGold)" />
+    
+    <!-- Inner Counter -->
+    <path d="M 46 25 L 58 25 C 68 25 75 30 75 40 C 75 50 68 55 58 55 L 46 55 Z" fill="#080808" />
+  </g>
+</svg>
