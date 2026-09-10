@@ -421,65 +421,212 @@ function initVastuCompassInteraction() {
 }
 
 /* ==========================================================================
-   7. ARCHITECTURAL QUOTATION FORM HANDLER
+   7. ARCHITECTURAL QUOTATION FORM HANDLER (DIRECT TO WHATSAPP)
    ========================================================================== */
 function initQuoteFormHandler() {
   const quoteForm = document.getElementById('quoteForm');
+  const TARGET_WHATSAPP_NUMBER = '919834266062'; // Rayanand Luxe Design WhatsApp (+91 98342 66062)
+
+  // Helper to escape HTML characters in templates
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
   window.handleQuoteSubmit = function() {
-    const name = document.getElementById('clientName')?.value;
-    const phone = document.getElementById('clientPhone')?.value;
-    const email = document.getElementById('clientEmail')?.value;
-    const projectType = document.getElementById('projectType')?.value;
-    const location = document.getElementById('projectLocation')?.value;
-    const area = document.getElementById('carpetArea')?.value;
-    const budget = document.getElementById('budgetRange')?.value;
+    const nameInput = document.getElementById('clientName');
+    const phoneInput = document.getElementById('clientPhone');
+    const emailInput = document.getElementById('clientEmail');
+    const typeInput = document.getElementById('projectType');
+    const locationInput = document.getElementById('projectLocation');
+    const areaInput = document.getElementById('carpetArea');
+    const budgetInput = document.getElementById('budgetRange');
+    const messageInput = document.getElementById('projectMessage');
     const formStatus = document.getElementById('formStatus');
     const submitBtn = document.getElementById('submitBtn');
+
+    // Clear any previous error styling
+    [nameInput, phoneInput, emailInput, typeInput, locationInput, areaInput].forEach(el => {
+      el?.classList.remove('field-error-highlight');
+    });
+
+    const name = nameInput?.value?.trim() || '';
+    const phone = phoneInput?.value?.trim() || '';
+    const email = emailInput?.value?.trim() || '';
+    const projectType = typeInput?.value || '';
+    const location = locationInput?.value?.trim() || '';
+    const area = areaInput?.value?.trim() || '';
+    const budget = budgetInput?.value || 'Flexible / To Be Estimated';
+    const message = messageInput?.value?.trim() || '';
 
     // Collect checked services
     const checkedSvcs = Array.from(document.querySelectorAll('input[name="services"]:checked'))
       .map(cb => cb.value);
 
-    if (!name || !phone || !email || !projectType || !location || !area) {
-      alert('Please fill in all required specification fields.');
+    // Validate required fields
+    const missing = [];
+    if (!name) { missing.push('Client Name'); nameInput?.classList.add('field-error-highlight'); }
+    if (!phone) { missing.push('Phone Number'); phoneInput?.classList.add('field-error-highlight'); }
+    if (!email) { missing.push('Email Address'); emailInput?.classList.add('field-error-highlight'); }
+    if (!projectType) { missing.push('Project Type'); typeInput?.classList.add('field-error-highlight'); }
+    if (!location) { missing.push('Project Location'); locationInput?.classList.add('field-error-highlight'); }
+    if (!area) { missing.push('Carpet Area'); areaInput?.classList.add('field-error-highlight'); }
+
+    if (missing.length > 0) {
+      if (formStatus) {
+        formStatus.style.display = 'block';
+        formStatus.innerHTML = `
+          <div style="color: #ff8a80; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.5;">
+            ⚠️ <strong>MISSING SPECIFICATION FIELDS:</strong> Please complete ${missing.join(', ')} before sending to WhatsApp.
+          </div>
+        `;
+        formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
       return;
     }
 
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.textContent = 'GENERATING SPECIFICATION SHEET...';
+      submitBtn.innerHTML = `
+        <span class="btn-submit-icon">⏳</span>
+        <span class="btn-submit-text">PACKAGING SPECIFICATION FOR WHATSAPP...</span>
+      `;
     }
 
-    // Simulate architectural processing & quotation summary
+    // Build the structured WhatsApp message
+    const specId = `RLD-${Math.floor(1000 + Math.random() * 9000)}`;
+    const servicesList = checkedSvcs.length > 0
+      ? checkedSvcs.map(s => `  • ${s}`).join('\n')
+      : '  • Comprehensive Architectural & Luxe Interior';
+
+    const rawWhatsAppText = 
+`🏛️ *NEW PROJECT SPECIFICATION — RAYANAND LUXE DESIGN*
+*Inquiry Ref:* #${specId}
+━━━━━━━━━━━━━━━━━━━━━━
+👤 *Client Name:* ${name}
+📱 *Phone Number:* ${phone}
+✉️ *Email Address:* ${email}
+🏠 *Project Type:* ${projectType}
+📍 *Project Location:* ${location}
+📐 *Approx. Carpet Area:* ${area} sq. ft.
+💰 *Budget Scope:* ${budget}
+━━━━━━━━━━━━━━━━━━━━━━
+🛠️ *Required Disciplines:*
+${servicesList}
+${message ? `\n📝 *Special Requirements / Notes:*\n"${message}"\n` : ''}━━━━━━━━━━━━━━━━━━━━━━
+_Sent via rayanandluxedesign.com Architectural Specification Sheet_`;
+
+    const encodedText = encodeURIComponent(rawWhatsAppText);
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${TARGET_WHATSAPP_NUMBER}&text=${encodedText}`;
+
+    // Programmatically open WhatsApp in a new tab/app immediately
+    try {
+      window.open(whatsappUrl, '_blank');
+    } catch (e) {
+      console.warn('Popup blocked or iframe limitation:', e);
+    }
+
+    // Render luxury confirmation card
     setTimeout(() => {
       if (formStatus) {
         formStatus.style.display = 'block';
         formStatus.innerHTML = `
-          <div style="text-align: left;">
-            <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--gold); font-weight: bold; margin-bottom: 8px;">
-              ✓ SPECIFICATION REQUEST CONFIRMED — SPEC SHEET #RLD-${Math.floor(1000 + Math.random() * 9000)}
+          <div class="form-status-badge">✓ SPECIFICATION #${specId} COMPILED & SENT TO WHATSAPP</div>
+          <div class="form-status-lead">
+            Thank you, <strong>${escapeHtml(name)}</strong>. Your project inquiry has been formatted directly for our Principal Architect on WhatsApp (<strong>+91 98342 66062</strong>).
+          </div>
+          <div class="form-status-meta">
+            <strong>Project Overview:</strong> ${escapeHtml(area)} sq. ft. ${escapeHtml(projectType)} in ${escapeHtml(location)}<br>
+            <strong>Disciplines:</strong> ${checkedSvcs.map(s => escapeHtml(s)).join(' • ') || 'Full Turnkey Excellence'}<br>
+            <strong>Target Phone:</strong> +91 98342 66062 (Rayanand Luxe Design)
+          </div>
+
+          <div class="form-status-actions">
+            <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-wa-direct-launch" id="btnWaDirect">
+              <span>💬 OPEN IN WHATSAPP TO SEND DETAILS (+91 98342 66062) →</span>
+            </a>
+            <div class="btn-wa-subtext">
+              Tap the green button above if WhatsApp did not open automatically on your device.
             </div>
-            <div style="font-size: 0.85rem; color: var(--cream); line-height: 1.6;">
-              Thank you, <strong>${name}</strong>. Rayanand Luxe Design's Principal Architect will review your specifications for your <strong>${area} sq.ft ${projectType}</strong> in <strong>${location}</strong>.
+
+            <div class="form-status-secondary-row">
+              <button type="button" class="btn-status-ghost" id="btnCopyInquiry">
+                📋 COPY INQUIRY DETAILS
+              </button>
+              <button type="button" class="btn-status-ghost" id="btnResetInquiry">
+                ↺ SUBMIT ANOTHER INQUIRY
+              </button>
             </div>
-            <div style="margin-top: 10px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted);">
-              Selected Disciplines: ${checkedSvcs.join(' • ') || 'Comprehensive Architectural & Luxe Interior'}<br>
-              Estimated Budget Scope: ${budget}<br>
-              Direct Consultation Schedule: We will contact you at ${phone} or ${email} within 24 hours.
-            </div>
+
+            <details class="wa-preview-collapse">
+              <summary class="wa-preview-summary">VIEW EXACT WHATSAPP MESSAGE PREVIEW ▾</summary>
+              <pre class="wa-preview-body">${escapeHtml(rawWhatsAppText)}</pre>
+            </details>
           </div>
         `;
+
+        // Wire copy button
+        const copyBtn = document.getElementById('btnCopyInquiry');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', () => {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(rawWhatsAppText).then(() => {
+                copyBtn.textContent = '✓ COPIED TO CLIPBOARD!';
+                setTimeout(() => {
+                  copyBtn.textContent = '📋 COPY INQUIRY DETAILS';
+                }, 2500);
+              }).catch(() => {
+                copyBtn.textContent = 'COPIED TO CLIPBOARD!';
+              });
+            } else {
+              // Fallback for non-secure contexts
+              const textarea = document.createElement('textarea');
+              textarea.value = rawWhatsAppText;
+              document.body.appendChild(textarea);
+              textarea.select();
+              document.execCommand('copy');
+              document.body.removeChild(textarea);
+              copyBtn.textContent = '✓ COPIED TO CLIPBOARD!';
+              setTimeout(() => {
+                copyBtn.textContent = '📋 COPY INQUIRY DETAILS';
+              }, 2500);
+            }
+          });
+        }
+
+        // Wire reset button
+        const resetBtn = document.getElementById('btnResetInquiry');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', () => {
+            quoteForm?.reset();
+            formStatus.style.display = 'none';
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = `
+                <span class="btn-submit-icon">💬</span>
+                <span class="btn-submit-text">SUBMIT & SEND INQUIRY TO WHATSAPP →</span>
+              `;
+            }
+            quoteForm?.scrollIntoView({ behavior: 'smooth' });
+          });
+        }
+
+        formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'REQUEST QUOTATION →';
+        submitBtn.innerHTML = `
+          <span class="btn-submit-icon">💬</span>
+          <span class="btn-submit-text">RE-SEND INQUIRY TO WHATSAPP →</span>
+        `;
       }
-
-      // Reset form fields
-      document.getElementById('quoteForm')?.reset();
-    }, 1200);
+    }, 400);
   };
 
   quoteForm?.addEventListener('submit', (e) => {
