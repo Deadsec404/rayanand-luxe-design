@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCinemaScrollEngine();
   initPlanInteractiveToggles();
   initBeforeAfterSlider();
+  initServicesFilterAndQuickSelect();
   initVastuCompassInteraction();
   initQuoteFormHandler();
   initScrollRevealAndSpy();
@@ -346,6 +347,50 @@ function initBeforeAfterSlider() {
 
   window.addEventListener('touchend', () => {
     isDragging = false;
+  });
+}
+
+/* ==========================================================================
+   5B. SERVICES DISCIPLINE FILTER & QUICK-SELECT
+   ========================================================================== */
+function initServicesFilterAndQuickSelect() {
+  const filterBtns = document.querySelectorAll('.svc-filter-btn');
+  const servicePanels = document.querySelectorAll('.service-panel');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.getAttribute('data-filter');
+
+      filterBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+
+      servicePanels.forEach(panel => {
+        const category = panel.getAttribute('data-category');
+        if (filter === 'all' || category === filter) {
+          panel.classList.remove('hidden-by-filter');
+        } else {
+          panel.classList.add('hidden-by-filter');
+        }
+      });
+    });
+  });
+
+  // Pre-select service in quote form when clicking "REQUEST QUOTATION →"
+  const inquireLinks = document.querySelectorAll('.service-inquire-link');
+  inquireLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      const targetService = link.getAttribute('data-service-select');
+      if (!targetService) return;
+
+      const checkbox = document.querySelector(`input[name="services"][value="${targetService}"]`);
+      if (checkbox) {
+        checkbox.checked = true;
+      }
+    });
   });
 }
 
